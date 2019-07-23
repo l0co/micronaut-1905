@@ -36,7 +36,7 @@ public class UploadController {
 						byte[] bytes = it.getBytes();
 						out.write(bytes);
 						Thread.sleep(100);
-						System.out.println("GOT BYTES: "+bytes.length);
+						System.out.println("SERVER PROGRESS: "+bytes.length);
 						s.request(1);
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -52,7 +52,7 @@ public class UploadController {
 				public void onComplete() {
 					try {
 						out.close();
-						System.out.println("GOT ALL BYTES");
+						System.out.println("SERVER DONE");
 						emitter.onSuccess("OK");
 					} catch (Exception e) {
 						e.printStackTrace();

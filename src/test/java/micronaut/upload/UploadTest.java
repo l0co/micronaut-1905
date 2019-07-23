@@ -27,7 +27,8 @@ public class UploadTest {
 
 	@Test
 	public void testWithApacheHttpClient() throws Exception {
-		post("http://localhost:8080/upload", new File("/media/data/tmp/micronaut-tests/micronaut-1905/test/file.txt")); // TODOLF replace path
+		post("http://localhost:8080/upload",
+			new File("./test/file.txt"));
 	}
 
 	public void post(String url, File sendFile) throws IOException {
@@ -44,7 +45,7 @@ public class UploadTest {
 			@Override
 			public void counterChanged(int delta) {
 				// do something
-				System.out.println("********************************************* " + delta);
+				System.out.println("CLIENT PROGRESS: " + delta);
 			}});
 
 		multiEntity.addPart("file", fileBody);
@@ -52,6 +53,7 @@ public class UploadTest {
 		multiEntity.addPart("fileName", stringBody);
 		post.setEntity(multiEntity);
 		HttpResponse response = client.execute(post);
+		System.out.println("CLIENT DONE");
 	}
 
 	public static class MyFileBody extends FileBody {
