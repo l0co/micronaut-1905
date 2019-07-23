@@ -35,8 +35,8 @@ public class UploadController {
 					try {
 						byte[] bytes = it.getBytes();
 						out.write(bytes);
-						Thread.sleep(100);
 						System.out.println("SERVER PROGRESS: "+bytes.length);
+						Thread.sleep(100);
 						s.request(1);
 					} catch (Exception e) {
 						e.printStackTrace();
