@@ -11,7 +11,7 @@ $ dd if=/dev/zero of=./test/file.txt count=1024 bs=1024
 ## How to run
 
 ```
-$ gradle --info clean test
+$ ./gradlew --info clean test
 
 [...]
 
@@ -26,4 +26,10 @@ $ gradle --info clean test
 
 BUILD SUCCESSFUL in 10s
 5 actionable tasks: 4 executed, 1 up-to-date
+```
+
+### Running in docker
+
+```bash
+$ ./run-test-in-docker.sh
 ```
