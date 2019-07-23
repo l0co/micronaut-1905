@@ -14,21 +14,35 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * See https://stackoverflow.com/questions/7057342/how-to-get-a-progress-bar-for-a-file-upload-with-apache-httpclient-4
  */
 @MicronautTest
-public class UploadTest {
+public class UploadTest implements IReporter {
+
+	public static final Logger logger = LoggerFactory.getLogger(UploadTest.class);
+
+	@Inject protected ReportService reportService;
 
 	@Test
 	public void testWithApacheHttpClient() throws Exception {
+		reportService.reset();
 		post("http://localhost:8080/upload",
 			new File("./test/file.txt"));
+	}
+
+	@Override
+	public void report(long bytes) {
+		logger.info(IReporter.readableFileSize(bytes));
 	}
 
 	public void post(String url, File sendFile) throws IOException {
@@ -39,13 +53,14 @@ public class UploadTest {
 		HttpPost post = new HttpPost(url);
 		MultipartEntity multiEntity = new MultipartEntity();
 		MyFileBody fileBody = new MyFileBody(sendFile);
+		AtomicLong total = new AtomicLong(0);
 
 		fileBody.setListener(new IStreamListener(){
 
 			@Override
 			public void counterChanged(int delta) {
 				// do something
-				System.out.println("CLIENT PROGRESS: " + delta);
+				reportService.report(UploadTest.this, total.addAndGet(delta));
 			}});
 
 		multiEntity.addPart("file", fileBody);
@@ -53,7 +68,7 @@ public class UploadTest {
 		multiEntity.addPart("fileName", stringBody);
 		post.setEntity(multiEntity);
 		HttpResponse response = client.execute(post);
-		System.out.println("CLIENT DONE");
+		report(total.get());
 	}
 
 	public static class MyFileBody extends FileBody {

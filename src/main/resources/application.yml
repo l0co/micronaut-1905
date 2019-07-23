@@ -1,5 +1,7 @@
 micronaut:
   server:
     port: 8080
+    multipart:
+      max-file-size: 100MB
   application:
     name: micronaut-upload
